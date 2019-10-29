@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Helpers/ContactModel.dart';
 
+import 'ContactPage.dart';
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -36,7 +38,7 @@ class _HomePageState extends State<HomePage> {
         floatingActionButton: FloatingActionButton(
             backgroundColor: Colors.red,
             child: Icon(Icons.add),
-            onPressed: () {}),
+            onPressed: () {_showContactPage();}),
         body: ListView.builder(
             itemBuilder: (context, index) {
               return GestureDetector(
@@ -75,9 +77,17 @@ class _HomePageState extends State<HomePage> {
                                                   style:
                                                       TextStyle(fontSize: 15.0))
                                             ]))
-                                  ])))));
+                                  ])))),onTap: (){
+                    _showContactPage(contactEntity: listOfContacts[index]);
+              });
             },
             padding: EdgeInsets.all(10.0),
             itemCount: listOfContacts.length));
+  }
+
+  void _showContactPage({ModelOfContact contactEntity}){
+    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
+      return ContactPage(contact: contactEntity);
+    }));
   }
 }
