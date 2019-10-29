@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Helpers/ContactModel.dart';
 
@@ -27,6 +28,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+            actions: <Widget>[Padding(padding: EdgeInsets.only(right: 10.0),child:Icon(Icons.share))],
             title: Text("Contacts"),
             centerTitle: true,
             backgroundColor: Colors.red),
@@ -37,11 +39,45 @@ class _HomePageState extends State<HomePage> {
             onPressed: () {}),
         body: ListView.builder(
             itemBuilder: (context, index) {
-
+              return GestureDetector(
+                  child: Container(
+                      child: Card(
+                          child: Padding(
+                              padding: EdgeInsets.only(bottom: 10.0),
+                              child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Container(
+                                        width: 80.0,
+                                        height: 80.0,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  "images/user.png")),
+                                        )),
+                                    Padding(
+                                        padding: EdgeInsets.only(left: 10.0),
+                                        child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Text(listOfContacts[index].name,
+                                                  style: TextStyle(
+                                                      fontSize: 15.0,
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                              Text(listOfContacts[index].email,
+                                                  style: TextStyle(
+                                                      fontSize: 15.0)),
+                                              Text(listOfContacts[index].phone,
+                                                  style:
+                                                      TextStyle(fontSize: 15.0))
+                                            ]))
+                                  ])))));
             },
             padding: EdgeInsets.all(10.0),
             itemCount: listOfContacts.length));
   }
-
-
 }
