@@ -32,7 +32,7 @@ class Helper {
       return _db;
     } else {
       final directory = await getDatabasesPath();
-      final path = directory + "/contactu.db";
+      final path = directory + "/contatu.db";
       _db = await openDatabase(
         // Set the path to the database.
         path,
@@ -86,13 +86,15 @@ class Helper {
   Future<int> deleteContact(int id) async {
     Database database = await db;
     database = _db;
-    return database.delete(tableName, where: "$idColumn=?", whereArgs: [id]);
+    int num = await database.delete(tableName, where: "$idColumn=?", whereArgs: [id]);
+    return num;
   }
 
   Future<int> updateContact(ModelOfContact contact) async {
     Database database = await db;
     database = _db;
-    await database.update(tableName, contact.toMap(),
+    Map contactInMap = contact.toMap();
+    await database.update(tableName, contactInMap,
         where: "$idColumn=?", whereArgs: [contact.id]);
   }
 
@@ -132,11 +134,15 @@ class ModelOfContact {
   ModelOfContact();
 
   ModelOfContact.fromMap(Map map) {
+    String nameValueString = map[nameColumn].toString();
+    String emailValueString = map[emailColumn].toString();
+    String phoneValueString = map[phoneColumn].toString();
+
     id = map[idColumn];
-    name = map[nameColumn];
-    email = map[emailColumn];
-    phone = map[phoneColumn];
-    img = map[imgColumn];
+    name = nameValueString != null ? nameValueString : "";
+    email = emailValueString != null ? emailValueString : "";
+    phone = phoneValueString != null ? phoneValueString : "";
+    img = map[imgColumn] != null ? map[imgColumn] : "";
   }
 
   Map toMap() {

@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            actions: <Widget>[Padding(padding: EdgeInsets.only(right: 10.0),child:Icon(Icons.share))],
+
             title: Text("Contacts"),
             centerTitle: true,
             backgroundColor: Colors.red),
@@ -38,7 +38,9 @@ class _HomePageState extends State<HomePage> {
         floatingActionButton: FloatingActionButton(
             backgroundColor: Colors.red,
             child: Icon(Icons.add),
-            onPressed: () {_showContactPage();}),
+            onPressed: () {
+              _showContactPage();
+            }),
         body: ListView.builder(
             itemBuilder: (context, index) {
               return GestureDetector(
@@ -77,17 +79,80 @@ class _HomePageState extends State<HomePage> {
                                                   style:
                                                       TextStyle(fontSize: 15.0))
                                             ]))
-                                  ])))),onTap: (){
-                    _showContactPage(contactEntity: listOfContacts[index]);
-              });
+                                  ])))),
+                  onTap: () {
+                    _showEditOptions(context, index);
+                  });
             },
             padding: EdgeInsets.all(10.0),
             itemCount: listOfContacts.length));
   }
 
-  void _showContactPage({ModelOfContact contactEntity}){
-    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
+  void _showContactPage({ModelOfContact contactEntity}) async {
+    final recContact = await Navigator.push(context,
+        MaterialPageRoute(builder: (BuildContext context) {
       return ContactPage(contact: contactEntity);
     }));
+
+    if (recContact != null) {
+      if (contactEntity != null) {
+        await helper.updateContact(recContact);
+        //getAllContacts();
+      } else {
+        await helper.saveContact(recContact);
+      }
+      getAllContacts();
+    }
+  }
+
+  void getAllContacts() {
+    helper.getAllContacts().then((value) {
+      setState(() {
+        listOfContacts = value;
+      });
+    });
+  }
+
+  void _showEditOptions(BuildContext context, int index) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                FlatButton(
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    color: Colors.white,
+                    child: Text("Edit",
+                        style: TextStyle(color: Colors.black, fontSize: 18.0)),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _showContactPage(contactEntity: listOfContacts[index]);
+                    }),
+                FlatButton(
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    color: Colors.white,
+                    child: Text("Remove",
+                        style: TextStyle(color: Colors.black, fontSize: 18.0)),
+                    onPressed: () {
+                      helper.deleteContact(listOfContacts[index].id);
+
+                      setState(() {
+                        listOfContacts.removeAt(index);
+                        Navigator.pop(context);
+                      });
+                    }),
+                FlatButton(
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    color: Colors.white,
+                    child: Text("Close",
+                        style: TextStyle(color: Colors.black, fontSize: 18.0)),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    })
+              ]));
+        });
   }
 }
