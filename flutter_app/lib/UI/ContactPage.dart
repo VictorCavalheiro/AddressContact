@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Helpers/ContactModel.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ContactPage extends StatefulWidget {
   final ModelOfContact contact;
@@ -58,6 +61,17 @@ class _ContactPageState extends State<ContactPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       GestureDetector(
+                          onTap: () async {
+                            await ImagePicker.pickImage(
+                                    source: ImageSource.gallery)
+                                .then((file) {
+                              if (file == null) return;
+                              setState(() {
+
+                                _editedContact.img = file.path;
+                              });
+                            });
+                          },
                           child: Container(
                               alignment: Alignment.center,
                               width: 80.0,
@@ -65,7 +79,9 @@ class _ContactPageState extends State<ContactPage> {
                               decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   image: DecorationImage(
-                                      image: AssetImage("images/user.png"))))),
+                                      image: _editedContact.img != "" && _editedContact.img!=null
+                                          ? FileImage(File(_editedContact.img))
+                                          : AssetImage("images/user.png"))))),
                       TextField(
                           focusNode: _nameFocus,
                           controller: _nameController,
